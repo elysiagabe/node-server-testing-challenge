@@ -1,8 +1,28 @@
 const db = require('../data/dbConfig');
 
-exports.modules = {
+module.exports = {
+    find,
+    findById,
     add,
-    remove,
-    findById
+    remove
 }
 
+function find() {
+    return db('books')
+}
+
+function findById(id) {
+    return db('books').where({ id }).first();
+}
+
+function add(book) {
+    return db('books')
+        .insert(book, 'id')
+        .then(([id]) => {
+            return findById(id)
+        })
+}
+
+function remove(id) {
+    return db('books').where({ id }).del()
+}
