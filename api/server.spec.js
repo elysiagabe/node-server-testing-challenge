@@ -80,28 +80,49 @@ describe('server', function() {
     })
 
     describe('DELETE /books/:id endpoint', function() {
-        // beforeEach(async() => {
-        //     await db('books').truncate()
-        // })
+        const book = {
+            title: 'Normal People',
+            author: 'Sally Rooney',
+            id: 2
+        }
 
-        it('if book w/id is found, should return 200 status on succcess w/ success message',  function() {
+        const book2 = {
+            title: 'test',
+            author: 'test',
+            id: 5
+        }
+
+        it('if book is found, should return status code of 200', async function() {
+            await db('books').insert(book);
+
             return request(server)
-                .delete('/books/1')
+                .delete('/books/2')
                 .then(res => {
                     expect(res.status).toBe(200)
+                })
+        })
+
+        it('should return success message', async function() {
+            await db('books').insert(book);
+
+            return request(server)
+                .delete('/books/2')
+                .then(res => {
                     expect(res.body.message).toBe('Book successfully deleted')
                 })
         })
 
         it('should remove book from db', async function() {
-            const id = 1;
-            const book = await db('books').where({ id })
-            expect(book).toEqual([]);
+            await db('books').insert(book2);
+
+            const id = 2;
+            const deleted = await db('books').where({ id })
+            expect(deleted).toEqual([]);
         })
 
         it('if book w/id is NOT found, should return 404 status', function() {
             return request(server)
-                .delete('/books/2')
+                .delete('/books/10')
                 .then(res => {
                     expect(res.body.message).toBe('Book not found')
                 })
